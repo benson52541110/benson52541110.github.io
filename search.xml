@@ -2,7 +2,7 @@
 <search>
   <entry>
     <title>Markdown 基礎語法</title>
-    <url>/hexo/20240114/3904355907/</url>
+    <url>/bensonwu.github.io/hexo/20240114/3904355907/</url>
     <content><![CDATA[<p>大家好，這是我的第一篇文章，主要在介紹 markdown 語法</p>
 <h3 id="標題"><a href="#標題" class="headerlink" title="標題"></a>標題</h3><p>在文字前加上 # 來創建標題。標題等級由 # 的數量決定（從 1 到 6 級）。</p>
 <p># 一級標題</p>
