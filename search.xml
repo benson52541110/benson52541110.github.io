@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>Markdown 基礎語法</title>
+    <url>/hexo/20240114/3904355907/</url>
+    <content><![CDATA[<p>大家好，這是我的第一篇文章，主要在介紹 markdown 語法</p>
+<h3 id="標題"><a href="#標題" class="headerlink" title="標題"></a>標題</h3><p>在文字前加上 # 來創建標題。標題等級由 # 的數量決定（從 1 到 6 級）。</p>
+<p># 一級標題</p>
+<p>## 二級標題</p>
+<p>### 三級標題</p>
+<p>#### 四級標題</p>
+<p>##### 五級標題</p>
+<p>###### 六級標題</p>
+<h3 id="段落與換行"><a href="#段落與換行" class="headerlink" title="段落與換行"></a>段落與換行</h3><p>直接寫入文本會形成一個段落。在行尾加上兩個或更多的空格然後換行，可以創建一個新的段落。</p>
+<p>這是第一段。<br>這是第二段。</p>
+<h3 id="強調（斜體和粗體）"><a href="#強調（斜體和粗體）" class="headerlink" title="強調（斜體和粗體）"></a>強調（斜體和粗體）</h3><p>使用 * 或 _ 來創建斜體或粗體文字。</p>
+<p>*斜體* 或_斜體_<br>**粗體** 或 __粗體__</p>
+<p>效果如下:<br><em>我是斜體</em><br><strong>我是粗體</strong></p>
+<h3 id="列表"><a href="#列表" class="headerlink" title="列表"></a>列表</h3><p>使用 *、- 或 + 創建無序列表，使用數字創建有序列表。</p>
+<p>- 項目一<br>- 項目二<br>- 項目三</p>
+<ol>
+<li>第一項</li>
+<li>第二項</li>
+<li>第三項</li>
+</ol>
+<p>效果如下:</p>
+<ul>
+<li>項目一</li>
+<li>項目二</li>
+<li>項目三</li>
+</ul>
+<ol>
+<li>第一項</li>
+<li>第二項</li>
+<li>第三項</li>
+</ol>
+<h3 id="鏈接和圖片"><a href="#鏈接和圖片" class="headerlink" title="鏈接和圖片"></a>鏈接和圖片</h3><p>使用 []() 來添加鏈接，使用 ![]() 來添加圖片。<br>[這是一個鏈接](Link)<br>![這是一張圖片](Image)</p>
+<p>鏈接:<br><a href="https://firebasestorage.googleapis.com/v0/b/bensonblog-bd2a7.appspot.com/o/happyRat.png?alt=media&token=f65407f5-9c78-40ac-a832-a6f5fdc8be75">happyRat</a><br>圖片:<br><img src="https://firebasestorage.googleapis.com/v0/b/bensonblog-bd2a7.appspot.com/o/happyRat.png?alt=media&token=f65407f5-9c78-40ac-a832-a6f5fdc8be75" alt="happyRat"></p>
+<h3 id="代碼區塊"><a href="#代碼區塊" class="headerlink" title="代碼區塊"></a>代碼區塊</h3><p>使用反引號來表示行內代碼，使用前後三個反引號 &#96; 創建代碼塊。<br>`&#96;&#96;<br>這是行內代碼：code</p>
+<p>`&#96;&#96;</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">這是行內代碼：code</span><br><span class="line">測試測試</span><br><span class="line">測試測試</span><br><span class="line">測試測試</span><br><span class="line">測試測試</span><br></pre></td></tr></table></figure>
+
+<h3 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h3><p>&gt; 這是一段引用。</p>
+<blockquote>
+<p>這是一段引用。</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>Hexo</category>
+      </categories>
+      <tags>
+        <tag>Markdown</tag>
+      </tags>
+  </entry>
+</search>
