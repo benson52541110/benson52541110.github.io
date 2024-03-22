@@ -1,8 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Promise 深入研究</title>
+    <url>/javascript/20240115/4012903671/</url>
+    <content><![CDATA[<p>Promise 基本有三種狀態</p>
+<ol>
+<li>Pending（待定）：初始狀態，既不是成功，也不是失敗。</li>
+<li>Fulfilled（已實現）：意味著操作成功。</li>
+<li>Rejected（已拒絕）：意味著操作失敗。</li>
+</ol>
+<p>以下我們用 new Promise() 構造函數來創建一個新的 Promise。它接收一個函數作為參數，其中又接收兩個函數作為參數</p>
+<ol>
+<li>resolve(value)：如果操作成功，則調用此函數，並將成功值作為參數傳遞。</li>
+<li>reject(error)：如果操作失敗，則調用此函數，並將錯誤或拒絕的原因作為參數傳</li>
+</ol>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">let</span> promise = <span class="keyword">new</span> <span class="title class_">Promise</span>(<span class="keyword">function</span> (<span class="params">resolve, reject</span>) &#123;</span><br><span class="line">	<span class="comment">// 執行一些異步操作</span></span><br><span class="line">	<span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">		<span class="keyword">let</span> success = <span class="literal">true</span>; <span class="comment">// 假設這是根據異步操作結果得出的條件</span></span><br><span class="line">		<span class="keyword">if</span> (success) &#123;</span><br><span class="line">			<span class="title function_">resolve</span>(<span class="string">&quot;操作成功&quot;</span>);</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			<span class="title function_">reject</span>(<span class="string">&quot;操作失敗&quot;</span>);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;, <span class="number">1000</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">promise.<span class="title function_">then</span>(</span><br><span class="line">	<span class="function">(<span class="params">result</span>) =&gt;</span> <span class="variable language_">console</span>.<span class="title function_">log</span>(result), <span class="comment">// 成功時的回調，會輸出 &quot;操作成功&quot;</span></span><br><span class="line">	<span class="function">(<span class="params">error</span>) =&gt;</span> <span class="variable language_">console</span>.<span class="title function_">log</span>(error) <span class="comment">// 失敗時的回調，會輸出 &quot;操作失敗&quot;</span></span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>JavaScript</category>
+      </categories>
+      <tags>
+        <tag>Promise</tag>
+        <tag>Asynchronous</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Promise 的歷史與誕生</title>
+    <url>/javascript/20240115/2315880432/</url>
+    <content><![CDATA[<p>Promise 是一種用於處理非同步操作的機制， 主要用來解決傳統非同步行為造成的回調地獄(callback hell)，以下為傳統的處理方式，這是在只有一次請求的狀況下:</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> xhr = <span class="keyword">new</span> <span class="title class_">XMLHttpRequest</span>();</span><br><span class="line">xhr.<span class="title function_">addEventListener</span>(<span class="string">&quot;load&quot;</span>, <span class="keyword">function</span> (<span class="params">data</span>) &#123;</span><br><span class="line">	<span class="variable language_">console</span>.<span class="title function_">log</span>(data);</span><br><span class="line">&#125;);</span><br><span class="line">xhr.<span class="title function_">open</span>(<span class="string">&quot;GET&quot;</span>, <span class="string">&quot;http://www.example.com/&quot;</span>);</span><br><span class="line">xhr.<span class="title function_">send</span>();</span><br></pre></td></tr></table></figure>
+
+<p>但如果是我們要在第一次請求成功後，再進行第二次的請求，以此類推在上一次回調成功的函數裡發送下一次請求:</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> xhr = <span class="keyword">new</span> <span class="title class_">XMLHttpRequest</span>();</span><br><span class="line">xhr.<span class="title function_">addEventListener</span>(<span class="string">&quot;load&quot;</span>, <span class="keyword">function</span> (<span class="params">data</span>) &#123;</span><br><span class="line">	<span class="comment">// 發送第一次請求</span></span><br><span class="line">	<span class="variable language_">console</span>.<span class="title function_">log</span>(data);</span><br><span class="line">	<span class="keyword">const</span> xhr1 = <span class="keyword">new</span> <span class="title class_">XMLHttpRequest</span>();</span><br><span class="line">	xhr1.<span class="title function_">open</span>(<span class="string">&quot;GET&quot;</span>, <span class="string">&quot;http://www.example.com/&quot;</span>);</span><br><span class="line">	xhr1.<span class="title function_">send</span>();</span><br><span class="line">	xhr1.<span class="title function_">addEventListener</span>(<span class="string">&quot;load&quot;</span>, <span class="keyword">function</span> (<span class="params">data1</span>) &#123;</span><br><span class="line">		<span class="comment">// 發送第二次請求</span></span><br><span class="line">		<span class="variable language_">console</span>.<span class="title function_">log</span>(data1);</span><br><span class="line">		xhr1.<span class="title function_">addEventListener</span>(<span class="string">&quot;load&quot;</span>, <span class="keyword">function</span> (<span class="params">data2</span>) &#123;</span><br><span class="line">			<span class="comment">// 發送第三次請求</span></span><br><span class="line">		&#125;</span><br><span class="line">	&#125;);</span><br><span class="line">&#125;);</span><br><span class="line">xhr.<span class="title function_">open</span>(<span class="string">&quot;GET&quot;</span>, <span class="string">&quot;http://www.example.com/&quot;</span>);</span><br><span class="line">xhr.<span class="title function_">send</span>();</span><br></pre></td></tr></table></figure>
+
+<p>這種結構會導致代碼深度增加，可讀性和可維護性大大降低，造成所謂的「回調地獄」。<br>所以 Promise 就是用來解決這個問題，不僅提高了代碼的可讀性和可維護性，還提供了更強大的錯誤處理機制，以下是用 Promise 重構後的 code：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">request</span>(<span class="params">url</span>) &#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">		<span class="keyword">const</span> xhr = <span class="keyword">new</span> <span class="title class_">XMLHttpRequest</span>();</span><br><span class="line">		xhr.<span class="title function_">addEventListener</span>(<span class="string">&quot;load&quot;</span>, <span class="keyword">function</span> (<span class="params">data</span>) &#123;</span><br><span class="line">			<span class="variable language_">console</span>.<span class="title function_">log</span>(data);</span><br><span class="line">			<span class="title function_">resolve</span>(data);</span><br><span class="line">		&#125;);</span><br><span class="line">		xhr.<span class="title function_">addEventListener</span>(<span class="string">&quot;error&quot;</span>, <span class="keyword">function</span> (<span class="params">error</span>) &#123;</span><br><span class="line">			<span class="title function_">reject</span>(error);</span><br><span class="line">		&#125;);</span><br><span class="line">		xhr.<span class="title function_">open</span>(<span class="string">&quot;GET&quot;</span>, url);</span><br><span class="line">		xhr.<span class="title function_">send</span>();</span><br><span class="line">	&#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 第一個請求</span></span><br><span class="line"><span class="title function_">request</span>(<span class="string">&quot;http://www.example.com/&quot;</span>)</span><br><span class="line">	.<span class="title function_">then</span>(<span class="function">(<span class="params">data</span>) =&gt;</span> &#123;</span><br><span class="line">		<span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;第一個請求成功&quot;</span>, data);</span><br><span class="line">		<span class="comment">// 第二個請求</span></span><br><span class="line">		<span class="keyword">return</span> <span class="title function_">request</span>(<span class="string">&quot;http://www.example1.com/&quot;</span>);</span><br><span class="line">	&#125;)</span><br><span class="line">	.<span class="title function_">then</span>(<span class="function">(<span class="params">data</span>) =&gt;</span> &#123;</span><br><span class="line">		<span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;第二個請求成功&quot;</span>, data);</span><br><span class="line">		<span class="comment">// 第三個請求</span></span><br><span class="line">		<span class="keyword">return</span> <span class="title function_">request</span>(<span class="string">&quot;http://www.example2.com/&quot;</span>);</span><br><span class="line">	&#125;)</span><br><span class="line">	.<span class="title function_">then</span>(<span class="function">(<span class="params">data</span>) =&gt;</span> &#123;</span><br><span class="line">		<span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;第三個請求成功&quot;</span>, data);</span><br><span class="line">	&#125;)</span><br><span class="line">	.<span class="title function_">catch</span>(<span class="function">(<span class="params">error</span>) =&gt;</span> &#123;</span><br><span class="line">		<span class="variable language_">console</span>.<span class="title function_">error</span>(<span class="string">&quot;請求失敗&quot;</span>, error);</span><br><span class="line">	&#125;);</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>JavaScript</category>
+      </categories>
+      <tags>
+        <tag>Promise</tag>
+        <tag>Asynchronous</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Markdown 基礎語法</title>
-    <url>/bensonwu.github.io/hexo/20240114/3904355907/</url>
+    <url>/Markdown/20240114/3904355907/</url>
     <content><![CDATA[<p>大家好，這是我的第一篇文章，主要在介紹 markdown 語法</p>
 <h3 id="標題"><a href="#標題" class="headerlink" title="標題"></a>標題</h3><p>在文字前加上 # 來創建標題。標題等級由 # 的數量決定（從 1 到 6 級）。</p>
 <p># 一級標題</p>
@@ -46,10 +90,245 @@
 </blockquote>
 ]]></content>
       <categories>
-        <category>Hexo</category>
+        <category>Markdown</category>
       </categories>
       <tags>
         <tag>Markdown</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Promise 面試題與解析</title>
+    <url>/javascript/20240115/1698649568/</url>
+    <content><![CDATA[<h2 id="1-Promise-基礎題"><a href="#1-Promise-基礎題" class="headerlink" title="1. Promise 基礎題"></a>1. Promise 基礎題</h2><h3 id="問題-1"><a href="#問題-1" class="headerlink" title="問題 1"></a>問題 1</h3><figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> promise1 = <span class="keyword">new</span> <span class="title class_">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">	<span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;promise1&quot;</span>);</span><br><span class="line">&#125;);</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;1&quot;</span>, promise1);</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>promise1<br>1, promise&lt;pending&gt;</p>
+</blockquote>
+<p>過程解析:</p>
+<ul>
+<li>首先遇到 new Promise 並執行 console.log(“promise1”)</li>
+<li>然後執行 “1” 此時 promise1 沒有被 resolve or reject 所以狀態還是 pending</li>
+</ul>
+<h3 id="問題-2"><a href="#問題-2" class="headerlink" title="問題 2"></a>問題 2</h3><figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> promise = <span class="keyword">new</span> <span class="title class_">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">	<span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="number">1</span>);</span><br><span class="line">	<span class="title function_">resolve</span>(<span class="string">&quot;success&quot;</span>);</span><br><span class="line">	<span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="number">2</span>);</span><br><span class="line">&#125;);</span><br><span class="line">promise.<span class="title function_">then</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">	<span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="number">3</span>);</span><br><span class="line">&#125;);</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="number">4</span>);</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>1 2 4 3</p>
+</blockquote>
+<p>過程解析:</p>
+<ul>
+<li>首先遇到 new Promise 執行了 “1” 然後 狀態轉 resolve 把 “success” 保存下來 接著印出 “2”</li>
+<li>將 promise.then 加入 micro task</li>
+<li>接下來同步到 “4”</li>
+<li>macro task 執行完，檢查 promise.then 這個 micro task 狀態為 resolved 執行 “3”</li>
+</ul>
+<h3 id="問題-3"><a href="#問題-3" class="headerlink" title="問題 3"></a>問題 3</h3><figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> promise = <span class="keyword">new</span> <span class="title class_">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">	<span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="number">1</span>);</span><br><span class="line">	<span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="number">2</span>);</span><br><span class="line">&#125;);</span><br><span class="line">promise.<span class="title function_">then</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">	<span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="number">3</span>);</span><br><span class="line">&#125;);</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="number">4</span>);</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>1 2 4</p>
+</blockquote>
+<p>過程解析:</p>
+<ul>
+<li>遇到 new Promise 執行 1,2</li>
+<li>接著同步到 4</li>
+<li>檢查 promise.then 狀態為 pending 不執行</li>
+</ul>
+<h3 id="問題-4"><a href="#問題-4" class="headerlink" title="問題 4"></a>問題 4</h3><figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> promise1 = <span class="keyword">new</span> <span class="title class_">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">	<span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;promise1&quot;</span>);</span><br><span class="line">	<span class="title function_">resolve</span>(<span class="string">&quot;resolve1&quot;</span>);</span><br><span class="line">&#125;);</span><br><span class="line"><span class="keyword">const</span> promise2 = promise1.<span class="title function_">then</span>(<span class="function">(<span class="params">res</span>) =&gt;</span> &#123;</span><br><span class="line">	<span class="variable language_">console</span>.<span class="title function_">log</span>(res);</span><br><span class="line">&#125;);</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;1&quot;</span>, promise1);</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;2&quot;</span>, promise2);</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>‘promise1’<br>‘1’ Promise{&lt;resolved&gt;: ‘resolve1’}<br>‘2’ Promise{&lt;pending&gt;}<br>‘resolve1’</p>
+</blockquote>
+<p>過程解析:</p>
+<ul>
+<li>遇到 new Promise 執行 ‘promise1’</li>
+<li>遇到 promise1.then 加入 micro task</li>
+<li>執行 “1” promise1 狀態為 resolved 且結果為 ‘resolve1’</li>
+<li>執行 “2” promise2 狀態為 pending</li>
+<li>macro task 執行完，檢查 promise1.then 這個 micro task 狀態為 resolved 執行 res 也就是 “resolve1”</li>
+</ul>
+<h3 id="問題-5"><a href="#問題-5" class="headerlink" title="問題 5"></a>問題 5</h3><figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title function_">fn</span> = (<span class="params"></span>) =&gt;</span><br><span class="line">	<span class="keyword">new</span> <span class="title class_">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">		<span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="number">1</span>);</span><br><span class="line">		<span class="title function_">resolve</span>(<span class="string">&quot;success&quot;</span>);</span><br><span class="line">	&#125;);</span><br><span class="line"><span class="title function_">fn</span>().<span class="title function_">then</span>(<span class="function">(<span class="params">res</span>) =&gt;</span> &#123;</span><br><span class="line">	<span class="variable language_">console</span>.<span class="title function_">log</span>(res);</span><br><span class="line">&#125;);</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;start&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>1<br>‘start’<br>‘success’</p>
+</blockquote>
+<p>過程解析:</p>
+<ul>
+<li>fn 是返回一個 new Promise，之後會先碰到執行 fn()，所以先印出 1</li>
+<li>之後印出 ‘start’，再來是 res 也就是 ‘success’</li>
+</ul>
+<h3 id="問題-6-接續-問題-5-的-fn-呼叫順序改變"><a href="#問題-6-接續-問題-5-的-fn-呼叫順序改變" class="headerlink" title="問題 6 接續 問題 5 的 fn() 呼叫順序改變"></a>問題 6 接續 問題 5 的 fn() 呼叫順序改變</h3><figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title function_">fn</span> = (<span class="params"></span>) =&gt;</span><br><span class="line">	<span class="keyword">new</span> <span class="title class_">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">		<span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="number">1</span>);</span><br><span class="line">		<span class="title function_">resolve</span>(<span class="string">&quot;success&quot;</span>);</span><br><span class="line">	&#125;);</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;start&quot;</span>);</span><br><span class="line"><span class="title function_">fn</span>().<span class="title function_">then</span>(<span class="function">(<span class="params">res</span>) =&gt;</span> &#123;</span><br><span class="line">	<span class="variable language_">console</span>.<span class="title function_">log</span>(res);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>‘start’<br>1<br>‘success’</p>
+</blockquote>
+<p>過程解析:</p>
+<ul>
+<li>改成在 ‘start’ 後呼叫 fn() 因此順序改變</li>
+</ul>
+<h2 id="2-Promise-结合-setTimeout"><a href="#2-Promise-结合-setTimeout" class="headerlink" title="2.Promise 结合 setTimeout"></a>2.Promise 结合 setTimeout</h2><h3 id="問題-1-1"><a href="#問題-1-1" class="headerlink" title="問題 1"></a>問題 1</h3><figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;start&quot;</span>);</span><br><span class="line"><span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">	<span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;time&quot;</span>);</span><br><span class="line">&#125;);</span><br><span class="line"><span class="title class_">Promise</span>.<span class="title function_">resolve</span>().<span class="title function_">then</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">	<span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;resolve&quot;</span>);</span><br><span class="line">&#125;);</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;end&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>‘start’<br>‘end’<br>‘resolve’<br>‘time’</p>
+</blockquote>
+<p>過程解析:</p>
+<ul>
+<li>整個 script 為一個 macro task ，setTimeout 本身也是 macro task</li>
+<li>所以先依同步處理 ‘start’，setTimeout 為 macro task 放入 event Loop</li>
+<li>Promise.resolve().then 放入 micro task ，再來執行 ‘end’</li>
+<li>script 這個 macro task 執行完後再執行下一個 macro task 的中間檢查是否有 micro task</li>
+<li>於是執行 Promise.resolve().then 中的 ‘resolve’ 再來是 ‘time’</li>
+</ul>
+<h3 id="問題-2-1"><a href="#問題-2-1" class="headerlink" title="問題 2"></a>問題 2</h3><figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> promise = <span class="keyword">new</span> <span class="title class_">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">	<span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="number">1</span>);</span><br><span class="line">	<span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">		<span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;timerStart&quot;</span>);</span><br><span class="line">		<span class="title function_">resolve</span>(<span class="string">&quot;success&quot;</span>);</span><br><span class="line">		<span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;timerEnd&quot;</span>);</span><br><span class="line">	&#125;, <span class="number">0</span>);</span><br><span class="line">	<span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="number">2</span>);</span><br><span class="line">&#125;);</span><br><span class="line">promise.<span class="title function_">then</span>(<span class="function">(<span class="params">res</span>) =&gt;</span> &#123;</span><br><span class="line">	<span class="variable language_">console</span>.<span class="title function_">log</span>(res);</span><br><span class="line">&#125;);</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="number">4</span>);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>同步執行 1 2 遇到 setTimeout 放入 macro task</li>
+<li>遇到 promise.then 此時狀況是 pending 所以不執行</li>
+<li>執行到 4 接著執行第二個 macro task</li>
+<li>執行 “timerStart” 遇到 resolve 放入 micro task 再執行 “timerEnd”</li>
+<li>最後執行 micro task 執行 “success”</li>
+</ul>
+<blockquote>
+<p>1 2<br>4<br>timerStart timerEnd<br>success</p>
+</blockquote>
+<h3 id="問題-3-1"><a href="#問題-3-1" class="headerlink" title="問題 3"></a>問題 3</h3><h4 id="問題-3-1"><a href="#問題-3-1" class="headerlink" title="問題 3.1"></a>問題 3.1</h4>]]></content>
+      <categories>
+        <category>JavaScript</category>
+      </categories>
+      <tags>
+        <tag>Promise</tag>
+        <tag>Asynchronous</tag>
+        <tag>JavaScript&#39;s Interview Question</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>事件循環 event loop</title>
+    <url>/uncategorized/20240125/2101549682/</url>
+    <content><![CDATA[<p>在介紹事件循環前，要先介紹 JavaScript 裡重要的觀念，也就是同步 (synchronous) 與異步 (asynchronous)機制。</p>
+<h2 id="同步-synchronous-與異步-asynchronous"><a href="#同步-synchronous-與異步-asynchronous" class="headerlink" title="同步 (synchronous) 與異步 (asynchronous)"></a>同步 (synchronous) 與異步 (asynchronous)</h2><p>JavaScript 是單執行緒的程式語言，也就是會按照順序的一行執行完再執行下一行，這個概念就是同步。<br>但是在與伺服器端拿取資料時，會需要等待一段時間才能夠取得，那在 JavaScript 的同步概念下，網站就無法執行其他動作，也就是會停擺一陣子，那對使用者體驗非常不好，所以就產生了異步這個解決方法。<br>異步事件並不會阻礙主線程的進行，並且會在完成後通知主線程，比如通過 api 拿取伺服器端資料時，使用者還是可以操作網站的其他功能。<br>而瀏覽器或其他執行環境之所以能夠實踐異步，是因為有事件循環這個概念。</p>
+<h2 id="執行棧和隊列"><a href="#執行棧和隊列" class="headerlink" title="執行棧和隊列"></a>執行棧和隊列</h2><p>其實事件循環並不是存在 JavaScript 本身，而是 JavaScript 的執行環境來實現的，以下有幾個概念可以解釋：</p>
+<h3 id="堆-heap"><a href="#堆-heap" class="headerlink" title="堆(heap)"></a>堆(heap)</h3><p>一種數據結構，用來儲存 Object。</p>
+<h3 id="棧-Stack"><a href="#棧-Stack" class="headerlink" title="棧(Stack)"></a>棧(Stack)</h3><p>採用後進先出規則，執行函式過程中，會被添加到棧的頂部。全部執行完後，再依序從棧的頂端一一移除，直到清空。</p>
+<h3 id="隊列-Queue"><a href="#隊列-Queue" class="headerlink" title="隊列(Queue)"></a>隊列(Queue)</h3><p>一種數據結構，採用先進先出規則，等待處理的任務會放在隊列中，等待棧清空後，在從隊列裡拿出第一個任務執行。</p>
+<h3 id="事件循環-Event-loop"><a href="#事件循環-Event-loop" class="headerlink" title="事件循環(Event loop)"></a>事件循環(Event loop)</h3><p>不停地去查看棧是否空出，如果空出則則把隊列中的任務放到棧中執行。</p>
+<h2 id="事件循環"><a href="#事件循環" class="headerlink" title="事件循環"></a>事件循環</h2><p>所以大致上可以分為幾個步驟：</p>
+<ol>
+<li>將所有任務在主線程上執行，形成一個棧</li>
+<li>遇到異步任務，例如：Promise.then , setTimeout 瀏覽器就會調用 Web API ，等待結果後，在放置到隊列中。</li>
+<li>當棧的同步任務都執行完後，就會讀取隊列中的任務，並從第一個開始依序加入棧執行。</li>
+<li>一旦棧空了之後，就會再次讀取，不斷重複直到隊列中的任務都完成，這個流程就事件循環。</li>
+</ol>
+<h2 id="異步任務"><a href="#異步任務" class="headerlink" title="異步任務"></a>異步任務</h2><p>主要可以分成以下兩種：</p>
+<ol>
+<li>宏任務(Macro Task)</li>
+<li>微任務(Micro Task)</li>
+</ol>
+<p>這兩種的執行順序是不同的，所以在異步任務要區分出這兩種任務</p>
+<p>常見的宏任務與微任務如下：</p>
+<p>宏任務：script(整體程式碼)、setTimeout、setInterval、I&#x2F;O、事件、postMessage、 MessageChannel、setImmediate (Node.js)<br>微任務：Promise.then、 MutaionObserver、process.nextTick (Node.js)。</p>
+<p>執行順序如下：</p>
+<ul>
+<li>執行一次宏任務，最開始會是整個 srcipt</li>
+<li>執行過程中如果遇到宏任務，就放進宏任務列隊</li>
+<li>執行過程中如果遇到微任務，就放進微任務列隊</li>
+<li>當執行棧空了，先檢查微任務列隊，如果有微任務，就依序執行直到微任務列隊為空</li>
+<li>接著進行瀏覽器的渲染，渲然完後開始下一個宏任務 (回到最開始的步驟)</li>
+</ul>
+]]></content>
+      <tags>
+        <tag>Event Loop</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>淺拷貝 &amp; 深拷貝 shallow copy &amp; deep copy</title>
+    <url>/javascript/20240116/3906941860/</url>
+    <content><![CDATA[<h2 id="淺拷貝與深拷貝解決了什麼問題？"><a href="#淺拷貝與深拷貝解決了什麼問題？" class="headerlink" title="淺拷貝與深拷貝解決了什麼問題？"></a>淺拷貝與深拷貝解決了什麼問題？</h2><p>當我們在處理 Object 和 Array 時，經常會遇到需要複製數據的情況。淺拷貝（Shallow Copy）和深拷貝（Deep Copy）幫助我們在不同情況下進行有效的數據複製，以避免不必要的副作用和數據污染。</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">let</span> original = &#123; <span class="attr">name</span>: <span class="string">&quot;benson&quot;</span>, <span class="attr">age</span>: <span class="string">&quot;16&quot;</span> &#125;;</span><br><span class="line"><span class="keyword">let</span> copy = original;</span><br><span class="line">copy.<span class="property">name</span> = <span class="string">&quot;sam&quot;</span>;</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(original.<span class="property">name</span>); <span class="comment">// sam</span></span><br></pre></td></tr></table></figure>
+
+<p>在這個例子中，copy 變數並不是一個獨立的對象，它只是對 original 對象的一個引用。因此，當我們修改 copy 的屬性時，original 也會跟著改變。</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">let</span> original = &#123; <span class="attr">name</span>: <span class="string">&quot;benson&quot;</span>, <span class="attr">age</span>: <span class="string">&quot;16&quot;</span> &#125;;</span><br><span class="line"><span class="keyword">let</span> copy = original;</span><br><span class="line">copy.<span class="property">name</span> = <span class="string">&quot;sam&quot;</span>;</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(original.<span class="property">name</span>); <span class="comment">// sam</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="淺拷貝"><a href="#淺拷貝" class="headerlink" title="淺拷貝"></a>淺拷貝</h2><p>它會創建一個新的對象，並將原始對象的頂層屬性複製到這個新對象中。但是，如果原始對象的屬性是另一個對象或陣列，淺拷貝只會複製這些屬性的引用，而不是它們的實際值。</p>
+<p>對於 Object：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">let</span> original = &#123; <span class="attr">a</span>: <span class="number">1</span>, <span class="attr">b</span>: <span class="number">2</span> &#125;;</span><br><span class="line"><span class="keyword">let</span> copy1 = &#123; ...original &#125;; <span class="comment">// 物件展開（Object Spread）</span></span><br><span class="line"><span class="keyword">let</span> copy2 = <span class="title class_">Object</span>.<span class="title function_">assign</span>(&#123;&#125;, original); <span class="comment">// Object.assign()</span></span><br></pre></td></tr></table></figure>
+
+<p>對於 Array：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">let</span> originalArray = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</span><br><span class="line"><span class="keyword">let</span> copyArray = [...originalArray]; <span class="comment">// 使用展開語法</span></span><br><span class="line"><span class="keyword">let</span> copyArray2 = originalArray.<span class="title function_">slice</span>(); <span class="comment">// 使用 slice 方法</span></span><br><span class="line"><span class="keyword">let</span> copyArray3 = <span class="title class_">Array</span>.<span class="title function_">from</span>(originalArray); <span class="comment">// 使用 Array.from 方法</span></span><br><span class="line"><span class="keyword">let</span> copyArray4 = originalArray.<span class="title function_">concat</span>(); <span class="comment">// 使用 concat 方法</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="深拷貝"><a href="#深拷貝" class="headerlink" title="深拷貝"></a>深拷貝</h2><p>深拷貝，與淺拷貝不同，會複製物件的所有層次。它不僅複製頂層屬性，還會複製物件中嵌套的物件或陣列。</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">let</span> original = &#123; <span class="attr">a</span>: <span class="number">1</span>, <span class="attr">b</span>: &#123; <span class="attr">c</span>: <span class="number">2</span> &#125; &#125;;</span><br><span class="line"><span class="keyword">let</span> copy = &#123; ...original &#125;;</span><br><span class="line">original.<span class="property">b</span>.<span class="property">c</span> = <span class="number">3</span>;</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(copy.<span class="property">b</span>.<span class="property">c</span>); <span class="comment">// 3</span></span><br></pre></td></tr></table></figure>
+
+<p>以下有三種方法可以實現深拷貝：</p>
+<ol>
+<li>使用 JSON 方法<br>這是最簡單的深拷貝方法，缺點：無法複製方法、循環參照、特殊物件（如 Map、Set）以及 undefined 值。</li>
+</ol>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title function_">deepCopy</span> = (<span class="params">obj</span>) =&gt; <span class="title class_">JSON</span>.<span class="title function_">parse</span>(<span class="title class_">JSON</span>.<span class="title function_">stringify</span>(obj));</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>遞迴複製</li>
+</ol>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">deepCopy</span>(<span class="params">obj, hash = <span class="keyword">new</span> <span class="built_in">WeakMap</span>()</span>) &#123;</span><br><span class="line">	<span class="keyword">if</span> (obj === <span class="literal">null</span>) <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">	<span class="keyword">if</span> (obj <span class="keyword">instanceof</span> <span class="title class_">Date</span>) <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Date</span>(obj);</span><br><span class="line">	<span class="keyword">if</span> (obj <span class="keyword">instanceof</span> <span class="title class_">RegExp</span>) <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">RegExp</span>(obj);</span><br><span class="line">	<span class="keyword">if</span> (<span class="keyword">typeof</span> obj !== <span class="string">&quot;object&quot;</span>) <span class="keyword">return</span> obj;</span><br><span class="line">	<span class="keyword">if</span> (hash.<span class="title function_">has</span>(obj)) <span class="keyword">return</span> hash.<span class="title function_">get</span>(obj);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">let</span> clone = <span class="title class_">Array</span>.<span class="title function_">isArray</span>(obj) ? [] : &#123;&#125;;</span><br><span class="line">	hash.<span class="title function_">set</span>(obj, clone);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">let</span> key <span class="keyword">in</span> obj) &#123;</span><br><span class="line">		<span class="keyword">if</span> (obj.<span class="title function_">hasOwnProperty</span>(key)) &#123;</span><br><span class="line">			clone[key] = <span class="title function_">deepCopy</span>(obj[key], hash);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> clone;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>使用第三方庫：例如 Lodash 的 _.cloneDeep() 方法。</li>
+</ol>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> _ = <span class="built_in">require</span>(<span class="string">&quot;lodash&quot;</span>);</span><br><span class="line"><span class="keyword">const</span> obj = &#123; <span class="attr">a</span>: <span class="number">1</span>, <span class="attr">b</span>: &#123; <span class="attr">c</span>: <span class="number">2</span>, <span class="attr">d</span>: [<span class="number">3</span>, <span class="number">4</span>] &#125; &#125;;</span><br><span class="line"><span class="keyword">const</span> copy = _.<span class="title function_">cloneDeep</span>(obj);</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(copy); <span class="comment">// &#123; a: 1, b: &#123; c: 2, d: [3, 4] &#125; &#125;</span></span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>JavaScript</category>
+      </categories>
+      <tags>
+        <tag>Object</tag>
+        <tag>Shallow Copy</tag>
+        <tag>Deep Copy</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>繼承 &amp; 原型 &amp; 原型鍊 Extend &amp; Prototype &amp; Prototype chain</title>
+    <url>/javascript/20240123/2890915960/</url>
+    <content><![CDATA[<p>先來談談繼承這個概念，以狗為例，底下可能會有柴犬、柯基、吉娃娃等等的品種，那在建立這些品種時，就能把其中一定會具有的特性及行為給記錄起來，變成共有的參數，再根據他們的特徵去細分。這就是繼承所解決的問題。<br>轉化為 code 形式就像：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> 狗</span><br><span class="line">公共：</span><br><span class="line">    吠叫()</span><br><span class="line">私有：</span><br><span class="line">    皮毛</span><br><span class="line">    體型</span><br></pre></td></tr></table></figure>
+
+<p>從基本觀念來說，JavaScript 其實是建立在『物件』上的語言，這裡要分成基礎數據和引用數據來分析：<br>基礎數據：這兩種的原型都是 Number -&gt; Object</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 基礎類型</span></span><br><span class="line"><span class="keyword">let</span> num = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">let</span> num1 = <span class="keyword">new</span> <span class="title class_">Number</span>(<span class="number">0</span>); <span class="comment">// 包裹數字 3 的物件</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>補充觀念：上述兩者其實有一些差異<br>let num &#x3D; 0; 雖然原型是 Object 但他並不能完全使用陣列的方法<br>比如：num.a &#x3D; 2 賦值方法並不支援，但以 let num1 &#x3D; new Number(0); 宣告的就可以<br>而在 num.toString() 等等特定方法下，JavaScript 會短暫的將 num 轉為 Object 之後再轉回基本類型</p>
+</blockquote>
+<p>引用數據：這兩種的原型都是 Array -&gt; Object</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 引用類型</span></span><br><span class="line"><span class="keyword">let</span> num = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</span><br><span class="line"><span class="keyword">let</span> num1 = <span class="keyword">new</span> <span class="title class_">Array</span>(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>);</span><br></pre></td></tr></table></figure>
+
+<p>而這些數據之所以能使用到 Object 的方法就是 Javascript 擁有向上查找的特性，如果是 Number 類型，就可以使用<br>number &amp; Object 的方法與屬性，Array 類型就是 array &amp; Object</p>
+<p>接下來我們提提建立原型的方法：<br>早期，我們會採取構造函式來建立原型</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">Dog</span>(<span class="params">name, color, size</span>) &#123;</span><br><span class="line">	<span class="variable language_">this</span>.<span class="property">name</span> = name;</span><br><span class="line">	<span class="variable language_">this</span>.<span class="property">color</span> = color;</span><br><span class="line">	<span class="variable language_">this</span>.<span class="property">size</span> = size;</span><br><span class="line">&#125;</span><br><span class="line"><span class="title class_">Dog</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">back</span> = <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">	<span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="variable language_">this</span>.<span class="property">name</span> + <span class="string">&quot; 吠叫&quot;</span>);</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">var</span> bibi = <span class="keyword">new</span> <span class="title class_">Dog</span>(<span class="string">&quot;比比&quot;</span>, <span class="string">&quot;棕色&quot;</span>, <span class="string">&quot;小&quot;</span>);</span><br><span class="line"><span class="keyword">var</span> pupu = <span class="keyword">new</span> <span class="title class_">Dog</span>(<span class="string">&quot;噗噗&quot;</span>, <span class="string">&quot;白色&quot;</span>, <span class="string">&quot;大&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<p>在 ES6 引入後，class 語法也能建立原型並新增了些許方法，重構後：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Dog</span> &#123;</span><br><span class="line">	<span class="title function_">constructor</span>(<span class="params">name, color, size</span>) &#123;</span><br><span class="line">		<span class="variable language_">this</span>.<span class="property">name</span> = name;</span><br><span class="line">		<span class="variable language_">this</span>.<span class="property">color</span> = color;</span><br><span class="line">		<span class="variable language_">this</span>.<span class="property">size</span> = size;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="title function_">bark</span>(<span class="params"></span>) &#123;</span><br><span class="line">		<span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="variable language_">this</span>.<span class="property">name</span> + <span class="string">&quot; 吠叫&quot;</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> bibi = <span class="keyword">new</span> <span class="title class_">Dog</span>(<span class="string">&quot;比比&quot;</span>, <span class="string">&quot;棕色&quot;</span>, <span class="string">&quot;小&quot;</span>);</span><br><span class="line"><span class="keyword">var</span> pupu = <span class="keyword">new</span> <span class="title class_">Dog</span>(<span class="string">&quot;噗噗&quot;</span>, <span class="string">&quot;白色&quot;</span>, <span class="string">&quot;大&quot;</span>);</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>JavaScript</category>
+      </categories>
+      <tags>
+        <tag>Prototype</tag>
+        <tag>Prototype chain</tag>
+        <tag>Extend</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>閉包 closure</title>
+    <url>/javascript/20240124/2306276547/</url>
+    <content><![CDATA[<p>閉包發生在一個函式裡包含著另一個函式，且內部函式可以訪問到外部函式的變數，並且當外部函式執行完後，內部函式依舊能訪問到這些變數。</p>
+<p>而其實這些都是為了解決 JavaScript 的一些問題：</p>
+<ol>
+<li>實現私有變數：只能從函式內部去取得變數，而不能從外部訪問。</li>
+<li>封裝變數：藉由在函式宣告的變數，會存在於函式作用域裡，而不會污染到全域，減少命名衝突風險。</li>
+<li>維持狀態：多次調用函式時，變數的狀態會被保留下來。</li>
+</ol>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">createCounter</span>(<span class="params"></span>) &#123;</span><br><span class="line">	<span class="keyword">let</span> count = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">		count += <span class="number">1</span>;</span><br><span class="line">		<span class="keyword">return</span> count;</span><br><span class="line">	&#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> counter = <span class="title function_">createCounter</span>();</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="title function_">counter</span>()); <span class="comment">// 輸出 1</span></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="title function_">counter</span>()); <span class="comment">// 輸出 2</span></span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>JavaScript</category>
+      </categories>
+      <tags>
+        <tag>Closure</tag>
       </tags>
   </entry>
 </search>
